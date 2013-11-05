@@ -56,6 +56,8 @@ update-rc.d netkit-phase2 start 99 2 3 4 5 . stop 10 0 1 6 .
 
 # install quagga
 apt-get install quagga
+apt-get install busybox
+apt-get install telnet
 
 # disable unuseful service
 update-rc.d cron remove
