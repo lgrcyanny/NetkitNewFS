@@ -4,19 +4,15 @@ MOUNT_DIR=/mnt/nkfs2
 FILESYSTEM_SIZE=1024
 # each cylinder has 63 sectors, each of which is 512 bytes
 let CYL_COUNT=$FILESYSTEM_SIZE*1048576/32256
+
 # Create empty netkit-fs file
 dd if=/dev/zero of=$FS_NAME bs=1M count=0 seek=$FILESYSTEM_SIZE
+
+# Create image partition
 echo ",,L,*" | sfdisk -q -H 1 -S 63 -C $CYL_COUNT $FS_NAME
 
 # Binding lookback device to netkit-fs
 device_name=$(losetup -f)
-# losetup $device_name $FS_NAME
-
-# # Create image partition
-# echo ",,L,*" | sfdisk -q -H 1 -S 63 -C $CYL_COUNT $device_name
-# losetup -d $device_name
-
-# mv the image to netkit-fs
 # The offset is the size of one track
 losetup --offset 512 $device_name $FS_NAME
 
@@ -39,6 +35,7 @@ cp -Rvf $NETKIT_TWEAKS_DIR/etc $MOUNT_DIR/
 cp -Rvf $NETKIT_TWEAKS_DIR/sbin $MOUNT_DIR/
 
 # Handle the perl locale warning, so that update-rc.d can pass
+# I really doubt wheather the warning has influence?
 chroot $MOUNT_DIR apt-get install locales
 chroot $MOUNT_DIR export LANGUAGE=en_US.UTF-8
 chroot $MOUNT_DIR export LANG=en_US.UTF-8
@@ -78,7 +75,7 @@ chroot $MOUNT_DIR apt-get install telnet
 chroot $MOUNT_DIR update-rc.d cron remove
 chroot $MOUNT_DIR update-rc.d quagga remove
 
-exit root 
+# exit root 
 exit
 umount $MOUNT_DIR
 echo "done!"
