@@ -1,7 +1,7 @@
 #!/bin/bash
-FS_NAME=netkit-fs
+FS_NAME=netkit-fs-min
 MOUNT_DIR=/mnt/nkfs2
-FILESYSTEM_SIZE=2048
+FILESYSTEM_SIZE=1024
 # each cylinder has 63 sectors, each of which is 512 bytes
 let CYL_COUNT=$FILESYSTEM_SIZE*1048576/32256
 # Create empty netkit-fs file
@@ -37,33 +37,48 @@ debootstrap --arch i386 squeeze $MOUNT_DIR http://ftp.cn.debian.org/debian
 NETKIT_TWEAKS_DIR=netkit-tweaks
 cp -Rvf $NETKIT_TWEAKS_DIR/etc $MOUNT_DIR/
 cp -Rvf $NETKIT_TWEAKS_DIR/sbin $MOUNT_DIR/
-# Change root and install dependency packages
-chroot $MOUNT_DIR
-apt-get install locales
-apt-get install less
-apt-get install vim
 
-# Handle the perl locale warning, so taht update-rc.d can pass
-dpkg-reconfigure locales # it will popup a GUI, chose "en_US.UTF-8" with space key and press ok button
-export LANGUAGE=en_US.UTF-8
-export LANG=en_US.UTF-8
-export LC_ALL=en_US.UTF-8
-locale-gen en_US.UTF-8
+# Handle the perl locale warning, so that update-rc.d can pass
+chroot $MOUNT_DIR apt-get install locales
+chroot $MOUNT_DIR export LANGUAGE=en_US.UTF-8
+chroot $MOUNT_DIR export LANG=en_US.UTF-8
+chroot $MOUNT_DIR export LC_ALL=en_US.UTF-8,
+chroot $MOUNT_DIR export LC_PAPER=en_US.UTF-8
+chroot $MOUNT_DIR export LC_ADDRESS=en_US.UTF-8
+chroot $MOUNT_DIR export LC_MONETARY=en_US.UTF-8
+chroot $MOUNT_DIR export LC_NUMERIC=en_US.UTF-8
+chroot $MOUNT_DIR export LC_TELEPHONE=en_US.UTF-8
+chroot $MOUNT_DIR export LC_IDENTIFICATION=en_US.UTF-8
+chroot $MOUNT_DIR export LC_MEASUREMENT=en_US.UTF-8
+chroot $MOUNT_DIR export LC_TIME=en_US.UTF-8
+chroot $MOUNT_DIR export LC_NAME=en_US.UTF-8
+chroot $MOUNT_DIR dpkg-reconfigure locales # it will popup a GUI, chose "en_US.UTF-8" with space key and press ok button
+chroot $MOUNT_DIR  locale-gen en_US.UTF-8
+
+
+# Install necessary packages
+chroot $MOUNT_DIR apt-get update
+chroot $MOUNT_DIR apt-get install less
+chroot $MOUNT_DIR apt-get install vim
+chroot $MOUNT_DIR apt-get install chkconfig
+
 
 # link netkit-phase1 and netkit-phase2 to rcX.d for runlevel prority
-update-rc.d netkit-phase1 start 00 2 3 4 5 . stop 99 0 1 6 .
-update-rc.d netkit-phase2 start 99 2 3 4 5 . stop 10 0 1 6 .
+chroot $MOUNT_DIR insserv netkit-phase1 
+chroot $MOUNT_DIR chkconfig netkit-phase1 on
+chroot $MOUNT_DIR insserv netkit-phase2 
+chroot $MOUNT_DIR chkconfig netkit-phase2 on 
 
-# install quagga
-apt-get install quagga
-apt-get install busybox
-apt-get install telnet
+# enable quagga
+chroot $MOUNT_DIR apt-get install quagga
+chroot $MOUNT_DIR apt-get install busybox
+chroot $MOUNT_DIR apt-get install telnet
 
-# disable unuseful service
-update-rc.d cron remove
-update-rc.d quagga remove
+# disable unuseful service to make boot faster
+chroot $MOUNT_DIR update-rc.d cron remove
+chroot $MOUNT_DIR update-rc.d quagga remove
 
-# exit root 
+exit root 
 exit
 umount $MOUNT_DIR
 echo "done!"

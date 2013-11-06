@@ -22,8 +22,8 @@
 
 ### BEGIN INIT INFO
 # Provides:          netkit-phase1
-# Required-Start:    $remote-fs $syslog
-# Required-Stop:     $remote-fs $syslog
+# Required-Start:    
+# Required-Stop:     $all
 # Default-Start:     2 3 4 5
 # Default-Stop:      0 1 6
 # Short-Description: Netkit phase 1
