@@ -4,7 +4,7 @@ echo "=======================Configuring Netkit=============================="
 echo "=====Warning: Please run these following code manually and carefully====="
 
 #Copy necessary files to netkit-fs
-FS_NAME=netkit-fs-min
+FS_NAME=netkit-fs-light
 NETKIT_TWEAKS_DIR=netkit-tweaks
 MOUNT_DIR=/mnt/nkfs2
 mount -o loop,offset=512 -t ext2 $FS_NAME $MOUNT_DIR
@@ -25,13 +25,15 @@ mount -t proc none /proc
 
 # Handle the perl locale warning, so that update-rc.d can pass
 # I really doubt wheather the warning has influence?
-apt-get install locales
-export LANGUAGE=en_US.UTF-8
-export LANG=en_US.UTF-8
-export LC_ALL=en_US.UTF-8
-dpkg-reconfigure locales # it will popup a GUI, chose "en_US.UTF-8" with space key and press ok button
-locale-gen en_US.UTF-8
-update-locale LANG=en_US.UTF-8 LC_MEASUREMENT=en_US.UTF-8
+apt-get update
+# Locales warning has no impacts
+# apt-get install locales
+# export LANGUAGE=en_US.UTF-8
+# export LANG=en_US.UTF-8
+# export LC_ALL=en_US.UTF-8
+# dpkg-reconfigure locales # it will popup a GUI, chose "en_US.UTF-8" with space key and press ok button
+# locale-gen en_US.UTF-8
+# update-locale LANG=en_US.UTF-8 LC_MEASUREMENT=en_US.UTF-8
 
 
 # Install necessary packages
@@ -52,7 +54,7 @@ update-rc.d cron remove
 exit
 umount $MOUNT_DIR/proc
 umount $MOUNT_DIR
-# When can't umount, $MOUNT_DIR busy
+# When you can't umount with device busy warning
 fuser -m $MOUNT_DIR
 # if out put is
 # /dev/sdc1: 538 
@@ -64,24 +66,19 @@ echo "========================== Configuring quagga==================="
 echo "=====Warning: Please carefully and Manually run these following code inside the netkit vitual machine====="
 
 # install necessary packages
-apt-get install busybox
+./test.sh
 apt-get install telnet
 apt-get install telnetd
-apt-get install tcpd
-apt-get install tcpdump
-apt-get install tcpreen
-apt-get install tcpreplay
-apt-get install tcpslice
 apt-get install tcptraceroute
-apt-get install arping
-apt-get install arptables
 
 # install quagga
 apt-cache policy quagga
 apt-get install quagga -v 0.99.20.1
 
-# exit root 
-exit
-umount $MOUNT_DIR/proc
-umount $MOUNT_DIR
+# Check the disk usage
+dh -lf # I found that 320M is the smallest solution, since up to now, 304M has been used
+
+# shutdown virtual machine
+halt
+
 

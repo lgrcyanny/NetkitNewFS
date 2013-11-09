@@ -1,3 +1,5 @@
 netkit-fs
 netkit-fs-min
+netkit-fs-light
 *.disk
+*.ready

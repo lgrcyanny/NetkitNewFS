@@ -1,8 +1,8 @@
 #!/bin/bash
 echo "====================Installing Base Linux System======================"
-FS_NAME=netkit-fs-min
+FS_NAME=netkit-fs-light
 MOUNT_DIR=/mnt/nkfs2
-FILESYSTEM_SIZE=1024
+FILESYSTEM_SIZE=320
 # each cylinder has 63 sectors, each of which is 512 bytes
 let CYL_COUNT=$FILESYSTEM_SIZE*1048576/32256
 
@@ -29,7 +29,6 @@ mount -o loop,offset=512 -t ext2 $FS_NAME $MOUNT_DIR
 # Install the base filesystem  from Internet
 debootstrap --arch i386 squeeze $MOUNT_DIR http://ftp.cn.debian.org/debian
 echo "=================Base Linux System Installed Success=================="
-
 
 umount $MOUNT_DIR
 echo "done!"
