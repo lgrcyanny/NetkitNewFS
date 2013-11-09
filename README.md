@@ -46,11 +46,13 @@ Firstly, Please check wheather the linux base system installed valid.<BR>
 Secondly, Use insserv and chkconfig to configure netkit-phase1 and netkit-phase2
 
 2. Quagga install error
+----------
 I have tried to compile and make quagga manually, but unsuccessfully. I also tried mount the netkit-fs, and install quagga on my host, lstart can still unsuccessfully.
 Finally, I install quagga inside the netkit virtual machine with connection to Internet.
 <code>apt-get install quagga -v 0.99.20.1</code>, If the version too high, will be imcompatible with the netkit kernel.
 
 3. ip forwarding problem
+--------
 When I lstart a lab, the routers can lean routes from other machines, but can't be pinged.
 I digged into the problem, and find the solution, by defaut, ip forwarding is diabled, just open it.
 I copy the *sysctl.conf* from the original netkit-fs, configure the ip forwarding with <code>net.ipv4.ip_forward=1</code>
