@@ -76,7 +76,7 @@ apt-cache policy quagga
 apt-get install quagga -v 0.99.20.1
 
 # Check the disk usage
-dh -lf # I found that 320M is the smallest solution, since up to now, 304M has been used
+df -lh # I found that 320M is the smallest solution, since up to now, 304M has been used
 
 # shutdown virtual machine
 halt
